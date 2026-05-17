@@ -14,7 +14,7 @@ export default function CaptureScreen() {
   const streamRef = useRef<MediaStream | null>(null);
   const chunksRef = useRef<Blob[]>([]);
 
-  const [captureState, setCaptureState] = useState<"idle" | "capturing" | "captured" | "submitting">("idle");
+  const [captureState, setCaptureState] = useState<"idle" | "capturing" | "captured">("idle");
   const [countdown, setCountdown] = useState(3);
   const [photoTaken, setPhotoTaken] = useState(false);
   const [locationVerified, setLocationVerified] = useState(false);
@@ -214,10 +214,10 @@ export default function CaptureScreen() {
 
         <button
           onClick={handleSubmit}
-          disabled={!canSubmit || isSubmitting}
-          style={{ width: "100%", background: canSubmit ? "#173726" : "rgba(255,255,255,0.1)", color: "white", border: "none", borderRadius: "14px", padding: "16px", fontSize: "15px", fontWeight: 500, fontFamily: "'DM Sans', sans-serif", cursor: canSubmit ? "pointer" : "not-allowed", opacity: (!canSubmit || isSubmitting) ? 0.5 : 1, transition: "all 0.2s", marginBottom: "8px" }}
+          disabled={!canSubmit || (captureState as string) === "submitting"}
+          style={{ width: "100%", background: canSubmit ? "#173726" : "rgba(255,255,255,0.1)", color: "white", border: "none", borderRadius: "14px", padding: "16px", fontSize: "15px", fontWeight: 500, fontFamily: "'DM Sans', sans-serif", cursor: canSubmit ? "pointer" : "not-allowed", opacity: (!canSubmit || (captureState as string) === "submitting") ? 0.5 : 1, transition: "all 0.2s", marginBottom: "8px" }}
         >
-          {captureState === "submitting" ? "Submitting..." : "Submit proof"}
+          {(captureState as string) === "submitting" ? "Submitting..." : "Submit proof"}
         </button>
         <p style={{ textAlign: "center", fontSize: "11px", color: "rgba(255,255,255,0.3)", fontFamily: "'DM Sans', sans-serif" }}>
           Proof auto-submits when complete
