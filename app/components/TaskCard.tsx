@@ -50,7 +50,7 @@ export default function TaskCard({ task, onAccept }: Props) {
             fontFamily: "'Cormorant Garamond', Georgia, serif",
             fontSize: "32px", fontWeight: 700, color: "#131313", lineHeight: 1,
           }}>
-            ${task.paymentUsdc.toFixed(2)}
+            ${(task.paymentUsdc ?? 0).toFixed(2)}
           </div>
           <div style={{ fontSize: "9px", fontWeight: 600, letterSpacing: "0.1em", color: "rgba(0,0,0,0.4)", textTransform: "uppercase", fontFamily: "'DM Sans', sans-serif" }}>
             USDC
@@ -63,7 +63,7 @@ export default function TaskCard({ task, onAccept }: Props) {
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 13 8 13s8-7.75 8-13a8 8 0 0 0-8-8z"/>
         </svg>
-        {task.distanceMiles.toFixed(1)} mi away · {task.location.address.split(",")[0]}
+        {(task.distanceMiles ?? 0).toFixed(1)} mi away · {(task.location?.address ?? "Unknown location").split(",")[0]}
       </div>
 
       {/* CTA */}

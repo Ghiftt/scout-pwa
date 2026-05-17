@@ -33,7 +33,7 @@ export interface Task {
   expiresAt: number;
   proofRequired: string[];
   agent: string;
-  checkpointHash: string;
+  checkpointHash: string;ipfsHash?: string;
 }
 
 export interface Attestation {

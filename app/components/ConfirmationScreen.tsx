@@ -8,7 +8,7 @@ import { shortenHash } from "../lib/utils";
 import { DEMO_ATTESTATION } from "../lib/demo-tasks";
 
 export default function ConfirmationScreen() {
-  const { activeTask, setScreen, setActiveTask } = useScoutStore();
+  const { activeTask, setScreen, setActiveTask, captureURI } = useScoutStore();
   const [attestation, setAttestation] = useState<Attestation | null>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
@@ -95,7 +95,7 @@ export default function ConfirmationScreen() {
         </div>
       </div>
       <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: "390px", padding: "16px 20px 36px", background: "#F4F1EA", borderTop: "1px solid rgba(0,0,0,0.07)", display: "flex", flexDirection: "column", gap: "10px" }}>
-        <a href={"https://testnet.kitescan.ai/tx/" + att.txHash} target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", width: "100%", background: "#173726", color: "white", borderRadius: "16px", padding: "18px", fontSize: "16px", fontWeight: 500, fontFamily: "'DM Sans', sans-serif", textDecoration: "none" }}>
+        <a href={captureURI ?? "https://testnet.kitescan.ai/tx/" + att.txHash} target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", width: "100%", background: "#173726", color: "white", borderRadius: "16px", padding: "18px", fontSize: "16px", fontWeight: 500, fontFamily: "'DM Sans', sans-serif", textDecoration: "none" }}>
           View on Kite explorer
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>

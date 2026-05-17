@@ -23,6 +23,8 @@ interface ScoutStore {
   setCapturedVideo: (video: Blob | null) => void;
   captureLocation: { lat: number; lng: number } | null;
   setCaptureLocation: (location: { lat: number; lng: number } | null) => void;
+  captureURI: string | null;
+  setCaptureURI: (uri: string | null) => void;
 
   // Demo mode
   isDemoMode: boolean;
@@ -45,13 +47,18 @@ export const useScoutStore = create<ScoutStore>((set) => ({
   capturedVideo: null,
   setCapturedVideo: (video) => set({ capturedVideo: video }),
   captureLocation: null,
+  captureURI: null,
+  setCaptureURI: (uri) => set({ captureURI: uri }),
   setCaptureLocation: (location) => set({ captureLocation: location }),
+  
 
   isDemoMode: true,
-  initDemoMode: () =>
+  initDemoMode: () => {
+    const isDemo = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
     set({
       session: DEMO_SESSION,
-      tasks: DEMO_TASKS,
-      isDemoMode: true,
-    }),
+      tasks: isDemo ? DEMO_TASKS : [],
+      isDemoMode: isDemo,
+    });
+  },
 }));

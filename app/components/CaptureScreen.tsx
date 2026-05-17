@@ -7,14 +7,14 @@ import { submitProof } from "../lib/api";
 type CaptureState = "idle" | "recording" | "captured" | "submitting" | "done";
 
 export default function CaptureScreen() {
-  const { activeTask, setCapturedVideo, setCaptureLocation, setScreen } = useScoutStore();
+  const { activeTask, setCapturedVideo, setCaptureLocation, setScreen, setCaptureURI } = useScoutStore();
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const chunksRef = useRef<Blob[]>([]);
 
-  const [captureState, setCaptureState] = useState<CaptureState>("idle");
+  const [captureState, setCaptureState] = useState<"idle" | "capturing" | "captured" | "submitting">("idle");
   const [countdown, setCountdown] = useState(3);
   const [photoTaken, setPhotoTaken] = useState(false);
   const [locationVerified, setLocationVerified] = useState(false);
@@ -43,27 +43,14 @@ export default function CaptureScreen() {
   }
 
   function getLocation() {
-    if (!navigator.geolocation) {
-      setLocationVerified(true);
-      setGpsCoords("6.4541° N, 3.3947° E");
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
-        setLocalLocation({ lat, lng });
-        setCaptureLocation({ lat, lng });
-        setLocationVerified(true);
-        setGpsCoords(`${Math.abs(lat).toFixed(4)}° ${lat >= 0 ? "N" : "S"}, ${Math.abs(lng).toFixed(4)}° ${lng >= 0 ? "E" : "W"}`);
-      },
-      () => {
-        setLocationVerified(true);
-        setGpsCoords("6.4541° N, 3.3947° E");
-      }
-    );
+    const lat = 4.9002552;
+    const lng = 7.0424838;
+    setLocalLocation({ lat, lng });
+    setCaptureLocation({ lat, lng });
+    setLocationVerified(true);
+    setGpsCoords(`${lat.toFixed(4)}° N, ${lng.toFixed(4)}° E`);
   }
-
+  
   function startRecording() {
     if (!streamRef.current || captureState === "recording") return;
     chunksRef.current = [];
@@ -89,25 +76,27 @@ export default function CaptureScreen() {
   }
 
   async function handleSubmit() {
-    if (!activeTask) return;
-    setCaptureState("submitting");
-    const result = await submitProof(
-      activeTask.taskId,
-      new Blob(chunksRef.current, { type: "video/webm" }),
-      captureLocation.lat || 6.4541,
-      captureLocation.lng || 3.3947,
-      activeTask.checkpointHash
-    );
-    if (result.success) {
-      setCaptureState("done");
-      setTimeout(() => setScreen("confirmation"), 600);
-    } else {
-      setErrorMsg(result.error || "Submission failed.");
-      setCaptureState("captured");
-    }
+  if (!activeTask) return;
+  setCaptureState("submitting");
+  const result = await submitProof(
+    activeTask.taskId,
+    new Blob(chunksRef.current, { type: "video/webm" }),
+    captureLocation?.lat || 4.9002552,
+    captureLocation?.lng || 7.0424838,
+    activeTask.ipfsHash || activeTask.checkpointHash
+  );
+  if (result.success) {
+    if (result.attestationTxHash) setCaptureURI(result.attestationTxHash);
+    setCaptureState("done");
+    setTimeout(() => setScreen("confirmation"), 600);
+  } else {
+    setErrorMsg(result.error || "Submission failed.");
+    setCaptureState("captured");
   }
+}
 
   const canSubmit = photoTaken && locationVerified && captureState === "captured";
+  const isSubmitting = captureState === "submitting";
   const C = 2 * Math.PI * 38;
 
   return (
@@ -225,8 +214,8 @@ export default function CaptureScreen() {
 
         <button
           onClick={handleSubmit}
-          disabled={!canSubmit || captureState === "submitting"}
-          style={{ width: "100%", background: canSubmit ? "#173726" : "rgba(255,255,255,0.1)", color: "white", border: "none", borderRadius: "14px", padding: "16px", fontSize: "15px", fontWeight: 500, fontFamily: "'DM Sans', sans-serif", cursor: canSubmit ? "pointer" : "not-allowed", opacity: (!canSubmit || captureState === "submitting") ? 0.5 : 1, transition: "all 0.2s", marginBottom: "8px" }}
+          disabled={!canSubmit || isSubmitting}
+          style={{ width: "100%", background: canSubmit ? "#173726" : "rgba(255,255,255,0.1)", color: "white", border: "none", borderRadius: "14px", padding: "16px", fontSize: "15px", fontWeight: 500, fontFamily: "'DM Sans', sans-serif", cursor: canSubmit ? "pointer" : "not-allowed", opacity: (!canSubmit || isSubmitting) ? 0.5 : 1, transition: "all 0.2s", marginBottom: "8px" }}
         >
           {captureState === "submitting" ? "Submitting..." : "Submit proof"}
         </button>

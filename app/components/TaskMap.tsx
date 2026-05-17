@@ -22,7 +22,7 @@ export default function TaskMap({ lat, lng, radiusMeters, className }: TaskMapPr
 
     const initMap = async () => {
       const L = (await import("leaflet")).default;
-      await import("leaflet/dist/leaflet.css");
+      await import("leaflet/dist/leaflet.css" as any);
 
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();

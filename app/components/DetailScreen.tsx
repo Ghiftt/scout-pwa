@@ -3,11 +3,13 @@
 import { useState, useEffect } from "react";
 import { useScoutStore } from "../lib/store";
 import { formatUsdc, formatTimeRemaining } from "../lib/utils";
+import { acceptTask } from "../lib/api";
 
 export default function DetailScreen() {
   const { activeTask, setScreen } = useScoutStore();
   const [timeRemaining, setTimeRemaining] = useState("");
   const [accepting, setAccepting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     if (!activeTask) return;
@@ -22,10 +24,22 @@ export default function DetailScreen() {
   const isVerify = activeTask.type === "Verify";
 
   async function handleAccept() {
-    setAccepting(true);
-    await new Promise((r) => setTimeout(r, 500));
-    setScreen("capture");
+  setAccepting(true);
+  setErrorMsg("");
+
+  const result = await acceptTask(
+    activeTask?.taskId ?? "",
+    "0x0000000000000000000000000000000000000001"
+  );
+
+  if (!result.success) {
+    setErrorMsg(result.error || "Failed to accept task. Try again.");
+    setAccepting(false);
+    return;
   }
+
+  setScreen("capture");
+}
 
   const missionId = `SC-${activeTask.taskId.slice(2, 7).toUpperCase()}`;
 
@@ -37,6 +51,17 @@ export default function DetailScreen() {
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "56px 20px 16px", background: "#F4F1EA",
       }}>
+        {errorMsg && (
+  <p style={{
+    color: "#c0392b",
+    fontSize: "12px",
+    textAlign: "center",
+    fontFamily: "'DM Sans', sans-serif",
+    marginBottom: "8px"
+  }}>
+    {errorMsg}
+  </p>
+)}
         <button onClick={() => setScreen("feed")} style={{ width: "36px", height: "36px", borderRadius: "50%", background: "rgba(0,0,0,0.06)", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#131313" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
         </button>
