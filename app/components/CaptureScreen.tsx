@@ -52,7 +52,7 @@ export default function CaptureScreen() {
   }
   
   function startRecording() {
-    if (!streamRef.current || captureState === "recording") return;
+    if (!streamRef.current || captureState === "capturing") return;
     chunksRef.current = [];
     setCaptureState("recording");
     setCountdown(3);
