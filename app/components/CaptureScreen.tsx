@@ -14,7 +14,7 @@ export default function CaptureScreen() {
   const streamRef = useRef<MediaStream | null>(null);
   const chunksRef = useRef<Blob[]>([]);
 
-  const [captureState, setCaptureState] = useState<"idle" | "capturing" | "captured">("idle");
+  const [captureState, setCaptureState] = useState<"idle" | "capturing" | "recording" | "captured" | "submitting" | "done">("idle");
   const [countdown, setCountdown] = useState(3);
   const [photoTaken, setPhotoTaken] = useState(false);
   const [locationVerified, setLocationVerified] = useState(false);
