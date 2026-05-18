@@ -46,7 +46,7 @@ export async function acceptTask(
     const res = await fetch(`${API_BASE}/task/${taskId}/accept`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ scoutAddress }),
+      body: JSON.stringify({ scoutAddress: "0x9751f803b48378aC9d4ab1Ee1ABdEc756067a1D7" }),
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({})) as { error?: string };
@@ -119,7 +119,7 @@ export async function submitProof(
 
     const bundle = {
       taskId,
-      scoutAddress: "0x0000000000000000000000000000000000000001",
+      scoutAddress: "0x9751f803b48378aC9d4ab1Ee1ABdEc756067a1D7",
       videoBase64,
       videoMimeType,
       gps: gpsPayload,
